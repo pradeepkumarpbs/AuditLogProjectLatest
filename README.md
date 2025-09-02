@@ -1,6 +1,23 @@
 # AuditLogProjectLatest
 This project track audit log data
 
+Overview Project
+
+This service exposes User CRUD endpoints and writes detailed audit logs for every create/update/delete.
+Stack: .NET 8 + EF Core (SQL Server) + DI. Code-first migrations keep your data safe.
+
+Base URL (local dev): https://localhost:<port>
+(open Swagger at /swagger to explore interactively)
+
+Auth & Required Headers
+
+This sample is unauthenticated by default. For audit purposes, you can pass:
+
+X-User-Id (optional) – who performed the action (e.g., rylon.thomas).
+If omitted, the service uses the authenticated User.Identity.Name (if configured), else "system".
+
+X-Correlation-Id (optional) – a request trace ID (any GUID/string). Returned in logs to link requests across systems.
+
 MY API 
 1. POST	/api/user	Create a user (writes Created audit)
 2. GET	/api/user/{id}	Get a user by id
@@ -21,3 +38,28 @@ MY API
   "occurredAt": "2025-09-02T15:20:10.123Z",
   "correlationId": "2222-..."
 }
+
+
+Status Codes
+
+201 Created – user created
+
+200 OK – GET success
+
+204 No Content – update/delete success
+
+400 Bad Request – invalid input
+
+404 Not Found – user not found
+
+500 Internal Server Error – unhandled error (see server logs)
+
+
+Run locally 
+
+Configure SQL Server in appsettings.json.
+Create DB:
+dotnet tool install --global dotnet-ef
+dotnet ef migrations add InitialCreate
+dotnet ef database update
+
